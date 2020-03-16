@@ -79,21 +79,13 @@ namespace backend
                 .AllowCredentials();
             });
 
-            // if (env.IsDevelopment())
-            // {
-            //     app.UseDeveloperExceptionPage();
-            // }
-            // else
-            // {
-            //     app.UseHsts();
-            // }
             app.UseStaticFiles();
             app.UseSwaggerUi(typeof(Startup).GetTypeInfo().Assembly,settings =>
                 {
                     settings.GeneratorSettings.DefaultPropertyNameHandling = 
                         PropertyNameHandling.CamelCase;
-                    settings.GeneratorSettings.Description="Vehicle drive off tracker api";
-                    settings.GeneratorSettings.Title="Vehicle drive off tracker";
+                    settings.GeneratorSettings.Description="saimex international api";
+                    settings.GeneratorSettings.Title="saimex international api";
                 });
             app.UseAuthentication();
             
