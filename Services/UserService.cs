@@ -12,9 +12,10 @@ namespace WebApi.Services
 {
     public interface IUserService
     {
-        User Create(User user, string password);
+        User Register(User user, string password);
+        User Create(User user);
         User Authenticate(string username, string password);
-        List<User> GetUsers();
+        List<User> GetUsers(string userid,string q = "");
         User GetUserById(string id);
         bool UpdateUser(User user);
     }
@@ -29,7 +30,7 @@ namespace WebApi.Services
             _context = new DataContext(settings);
             _tokeniser = tokeniser;
         }
-        public User Create(User user, string password)
+        public User Register(User user, string password)
         {
             if (string.IsNullOrWhiteSpace(password))
                 throw new AppException("Password is required");
@@ -44,6 +45,28 @@ namespace WebApi.Services
                 user.Roles=new List<Role>{new Role{Name= "Admin" }};
                 user.PasswordHash = passwordHash;
                 user.PasswordSalt = passwordSalt;
+                user.DateCreated=DateTime.Now;
+                user.DateModified=DateTime.Now;
+                user.Username=user.Username.Trim();
+                user.UserId=_tokeniser.CreateToken(user.FirstName,user.LastName);
+                _context.Users.InsertOne(user);
+            }
+            catch (AppException)
+            {
+                //shout/catch/throw/log
+            }
+            return user;
+        }
+        public User Create(User user)
+        {
+            if (user==null)
+                throw new AppException("Password is required");
+
+            if (_context.Users.Find(u => u.Username == user.Username.Trim()).FirstOrDefault()!=null)
+                throw new AppException("Username '" + user.Username + "' is already taken");
+            try
+            {    
+                user.Roles=new List<Role>{new Role{Name= "Admin" }};
                 user.DateCreated=DateTime.Now;
                 user.DateModified=DateTime.Now;
                 user.Username=user.Username.Trim();
@@ -74,34 +97,47 @@ namespace WebApi.Services
         {
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
                 throw new AppException("No username/password");
+                var user=default(User);
             try
             {    
-            
-                var user = _context.Users.Find(x => x.Username == username).FirstOrDefault();
+                 user = _context.Users.Find(x => x.Username == username).FirstOrDefault();
 
                 if (user == null)
                     throw new AppException("No user found");
 
-
                 if (!PasswordHasher.VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
                     throw new AppException("Password incorrect");
-                return user;
             }
             catch (AppException)
             {
-               return null; //shout/catch/throw/log
-            }            
+                //shout/catch/throw/log
+            }     
+            return user;
         }
 
-        public List<User> GetUsers()
+        public List<User> GetUsers(string userid,string q = "")
         {
+            List<User> users=default(List<User>);
             try{
-                return _context.Users.Find(_=>true).ToList();
+                if(!string.IsNullOrWhiteSpace(userid)){
+                    users= _context.Users.Find(u=>u.CreatedBy.ToLowerInvariant()==userid.ToLowerInvariant()).ToList();
+                    if(!string.IsNullOrWhiteSpace(q)){
+                        q=q.ToLowerInvariant();
+                        users= _context.Users.Find(u=>u.FirstName.ToLowerInvariant().Contains(q) ||
+                        u.LastName.ToLowerInvariant().Contains(q) || u.Username.ToLowerInvariant().Contains(q) && 
+                        u.Username.ToLowerInvariant()==userid.ToLowerInvariant()).ToList();                    
+                    }
+                        
+                }
+                else{
+                    users= _context.Users.Find(_=>true).ToList();
+                }
             }
             catch (AppException)
             {
-               return null; //shout/catch/throw/log
-            }               
+               //shout/catch/throw/log
+            }     
+            return users;          
         }
 
         public bool UpdateUser(User user)

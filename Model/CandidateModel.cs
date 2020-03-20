@@ -5,7 +5,7 @@ using System;
 
 namespace WebApi.Model
 {
-    public class User
+    public class Candidate
     {
         [BsonId]
         public ObjectId ID { get; set; }
@@ -20,10 +20,9 @@ namespace WebApi.Model
         public DateTime DateModified { get; set; }
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
-        public string CreatedBy { get; set; }
+        public string CreatedBy { get; set; }        
     }
-
-    public class UserDto
+    public class CandidateDto
     {
         [BsonId]
         public int ID { get; set; }
@@ -35,16 +34,6 @@ namespace WebApi.Model
         public DateTime DateCreated { get; set; }
         public DateTime DateModified { get; set; }
         public string Password { get; set; }
-        public string CreatedBy { get; set; }
+        public string CreatedBy { get; set; }        
     }
-    public class UserInfo
-    {
-        public string ID { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Username { get; set; }
-        public string Location { get; set; }
-        public DateTime DateCreated { get; set; }
-        public DateTime DateModified { get; set; }
-    }    
 }

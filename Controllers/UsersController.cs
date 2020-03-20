@@ -22,12 +22,13 @@ namespace WebApi.Controllers
             _tokeniser = tokeniser;
         }
 
-        [HttpGet("")]
+        [HttpGet("{userid}/{q?}")]
         [ProducesResponseType(200, Type = typeof(List<User>))]
         [ProducesResponseType(404)]
-        public IActionResult GetUsers()
+        public IActionResult GetUsers(string userid, string q = "")
         {
-            var users=_userService.GetUsers();
+            if (q == null ||q == "undefined")  q = "";
+            var users=_userService.GetUsers(userid,q);
             if(users==null) return NotFound();
             var userDtos=_mapper.Map<List<UserDto>>(users);
             return Ok(userDtos);
@@ -78,7 +79,24 @@ namespace WebApi.Controllers
 
             try
             {
-                _userService.Create(user, userDto.Password);
+                _userService.Register(user, userDto.Password);
+                return Ok(new {User=userDto.Username});
+            }
+            catch (AppException ex)
+            {
+                return BadRequest(ex.Message);//shout/catch/throw/log
+            }
+        }
+        [HttpPost("create")]
+        [ProducesResponseType(200, Type = typeof(string))]
+        [ProducesResponseType(400)]
+        public IActionResult Create([FromBody]UserDto userDto)
+        {
+            var user = _mapper.Map<User>(userDto);
+
+            try
+            {
+                _userService.Create(user);
                 return Ok(new {User=userDto.Username});
             }
             catch (AppException ex)
