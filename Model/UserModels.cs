@@ -1,6 +1,7 @@
 using MongoDB.Bson;
 using System.Collections.Generic;
 using MongoDB.Bson.Serialization.Attributes;
+using System;
 
 namespace WebApi.Model
 {
@@ -15,6 +16,8 @@ namespace WebApi.Model
         public List<Role> Roles {get;set;}
         public string Username { get; set; }
         public string Location { get; set; }
+        public DateTime DateCreated { get; set; }
+        public DateTime DateModified { get; set; }
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
     }
@@ -23,10 +26,13 @@ namespace WebApi.Model
     {
         [BsonId]
         public int ID { get; set; }
+        public string UserId { get; set; }         
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Username { get; set; }
         public string Location { get; set; }
+        public DateTime DateCreated { get; set; }
+        public DateTime DateModified { get; set; }
         public string Password { get; set; }
     }
     public class UserInfo
@@ -36,5 +42,7 @@ namespace WebApi.Model
         public string LastName { get; set; }
         public string Username { get; set; }
         public string Location { get; set; }
+        public DateTime DateCreated { get; set; }
+        public DateTime DateModified { get; set; }
     }    
 }

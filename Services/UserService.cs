@@ -44,6 +44,8 @@ namespace WebApi.Services
                 user.Roles=new List<Role>{new Role{Name= "Admin" }};
                 user.PasswordHash = passwordHash;
                 user.PasswordSalt = passwordSalt;
+                user.DateCreated=DateTime.Now;
+                user.DateModified=DateTime.Now;
                 user.Username=user.Username.Trim();
                 user.UserId=_tokeniser.CreateToken(user.FirstName,user.LastName);
                 _context.Users.InsertOne(user);
@@ -108,6 +110,7 @@ namespace WebApi.Services
                 var filter = Builders<User>.Filter.Eq(s => s.Username, user.Username);
                 var update = Builders<User>.Update.Set(s => s.FirstName, user.FirstName)
                 .Set(s => s.LastName, user.LastName)
+                .Set(s => s.DateModified, DateTime.Now)
                 .Set(s => s.Location, user.Location);            
                 var updateResult = _context.Users.UpdateOne(filter,update);
                 return updateResult.IsAcknowledged && updateResult.MatchedCount>0;                
