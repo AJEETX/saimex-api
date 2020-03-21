@@ -42,7 +42,7 @@ namespace WebApi.Services
                 byte[] passwordHash, passwordSalt;
                 PasswordHasher.CreatePasswordHash(password, out passwordHash, out passwordSalt);
 
-                user.Roles=new List<Role>{new Role{Name= "Admin" }};
+                user.Roles=new List<Role>{new Role{Name= "User" }};
                 user.PasswordHash = passwordHash;
                 user.PasswordSalt = passwordSalt;
                 user.DateCreated=DateTime.Now;
@@ -66,7 +66,7 @@ namespace WebApi.Services
                 throw new AppException("Username '" + user.Username + "' is already taken");
             try
             {    
-                user.Roles=new List<Role>{new Role{Name= "Admin" }};
+                user.Roles=new List<Role>{new Role{Name= "User" }};
                 user.DateCreated=DateTime.Now;
                 user.DateModified=DateTime.Now;
                 user.Username=user.Username.Trim();

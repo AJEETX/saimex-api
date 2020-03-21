@@ -5,6 +5,7 @@ using AutoMapper;
 using WebApi.Helpers;
 using WebApi.Model;
 using WebApi.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebApi.Controllers
 {
@@ -87,6 +88,7 @@ namespace WebApi.Controllers
                 return BadRequest(ex.Message);//shout/catch/throw/log
             }
         }
+        [Authorize(Roles = "Admin")]        
         [HttpPost("create")]
         [ProducesResponseType(200, Type = typeof(string))]
         [ProducesResponseType(400)]
